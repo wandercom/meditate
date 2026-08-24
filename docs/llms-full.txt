@@ -2,8 +2,8 @@
 
 Canonical docs: https://jmcentire.github.io/meditate/
 Source: https://github.com/jmcentire/meditate
-Version described: 0.5.0 alpha
-Snapshot: 2026-08-19
+Version described: 0.6.0 alpha
+Snapshot: 2026-08-24
 License: MIT
 Runtime: Python 3.11+
 
@@ -11,7 +11,7 @@ Runtime: Python 3.11+
 
 Operator instructions, explicit corrections, applicable scope, and named-actor handoff boundaries outrank model fluency, recency alone, evidence volume, and structural confidence. Temporal order informs an older record instead of deleting it. A newer record wins only when authority and scope permit it.
 
-Meditate is a local behavioral-contract compiler and policy router. Version 0.5 provides evidence-grounded semantic nomination, bounded directive compilation, archive-first reversible execution, and direct target/output compilation. Evidence-grounded missing rules can become reversible introductions into exact writable targets. It addresses monotonic append: after a correction, another exception is recorded without revising the rule that caused the failure. It is not a generic provider-state, vector-store, workspace, side-effect, cache, or model-weight scrubber.
+Meditate is a local behavioral-contract compiler and policy router. Version 0.6 provides evidence-grounded semantic nomination, bounded directive compilation, archive-first reversible execution, and direct target/output compilation. Evidence-grounded missing rules can become reversible introductions into exact writable targets. It addresses monotonic append: after a correction, another exception is recorded without revising the rule that caused the failure. It is not a generic provider-state, vector-store, workspace, side-effect, cache, or model-weight scrubber.
 
 ## Objective and fixed point
 
@@ -185,8 +185,8 @@ Runtime credentials use only `ANTHROPIC_API_KEY` for planning and `OPENAI_API_KE
 
 ## Distribution
 
-The canonical public distribution for v0.5.0 is the GitHub Release wheel:
-https://github.com/jmcentire/meditate/releases/download/v0.5.0/meditate_agent-0.5.0-py3-none-any.whl
+The canonical public distribution for v0.6.0 is the GitHub Release wheel:
+https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
 
 PyPI publication is not claimed. CI validates Ruff, strict mypy, pytest on supported Python versions, and an isolated wheel build but does not publish.
 

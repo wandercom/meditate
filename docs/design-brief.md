@@ -4,7 +4,7 @@
 
 Build toward a locally operated behavioral-contract compiler and policy router that
 resolves identified defects in directives used by Claude Code and OpenAI Codex.
-Version 0.5 establishes two separate production boundaries: evidence-grounded
+Version 0.6 establishes two separate production boundaries: evidence-grounded
 semantic nomination, then bounded directive compilation over locally admitted
 candidates. Evidence-grounded missing rules can become reversible introductions into exact
 configured targets. Current prose is analyzed with
@@ -814,14 +814,14 @@ call boundary.
 
 ## Release and distribution
 
-Package metadata and the runtime version are synchronized at `0.5.0`. Drafter
+Package metadata and the runtime version are synchronized at `0.6.0`. Drafter
 prompt v18 (SHA-256 `510c166f...`)/parser `meditate-parser-v34` binds the direct
 target/output artifact contract and narrow confirmed-duplicate removal ground
 into new plans. The
 canonical public distribution surface is the versioned wheel attached to the
-`v0.5.0` GitHub Release:
+`v0.6.0` GitHub Release:
 
-`https://github.com/jmcentire/meditate/releases/download/v0.5.0/meditate_agent-0.5.0-py3-none-any.whl`
+`https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl`
 
 The repository CI checks Ruff, strict mypy, pytest across supported Python
 versions, and an isolated wheel build. It does not publish. PyPI publication is

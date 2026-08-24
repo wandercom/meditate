@@ -2,7 +2,12 @@
 
 All notable changes to Meditate are documented here.
 
-## Unreleased
+## 0.6.0 - 2026-08-24
+
+Meditate v0.6.0 defines kindex's additive nodes as a read-only analysis target class and
+ships the first slice of that specification: config-gated, fail-closed enumeration of those
+nodes. Default behavior is unchanged; the gating flag defaults to `false`, and no packet
+wiring, write path, or candidate submission exists in this release.
 
 ### Added
 

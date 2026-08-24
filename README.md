@@ -5,10 +5,10 @@
 [Design brief](docs/design-brief.md) ·
 [Changelog](CHANGELOG.md)
 
-Current package version: **0.5.0 alpha**.
+Current package version: **0.6.0 alpha**.
 
 Meditate's product goal is a locally operated behavioral-contract compiler and policy
-router for the directives Claude Code and OpenAI Codex load. Version 0.5 delivers two
+router for the directives Claude Code and OpenAI Codex load. Version 0.6 delivers two
 separate production boundaries: an evidence-grounded semantic Analyst that nominates
 possible defects, and a bounded directive compiler that can act only on locally admitted
 candidates. It reads current prose together with temporally ordered interactions and
@@ -19,7 +19,7 @@ now a reversible introduction into an exact configured target, not a report that
 finding. Its fixed point is stability, not shrinkage: a well-formed file is a successful,
 byte-identical no-op.
 
-Version 0.5 also makes compiler input explicit. `inspect`, `plan`, and `run`
+Version 0.6 also makes compiler input explicit. `inspect`, `plan`, and `run`
 accept repeatable `--target FILE` arguments for arbitrary Markdown instruction files,
 including `CLAUDE.md`, `AGENTS.md`, scoped rules, and `SKILL.md`. Without `--output`,
 each selected file is maintained in place. With `--output FILE`, every input is
@@ -73,12 +73,12 @@ private XDG data/state directories, not this repository.
 
 ### GitHub Release wheel
 
-The canonical public distribution surface for v0.5.0 is the versioned wheel
+The canonical public distribution surface for v0.6.0 is the versioned wheel
 attached to its GitHub Release. After that release asset is published:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install https://github.com/jmcentire/meditate/releases/download/v0.5.0/meditate_agent-0.5.0-py3-none-any.whl
+.venv/bin/pip install https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
 .venv/bin/meditate init
 ```
 

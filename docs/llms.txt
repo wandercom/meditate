@@ -2,9 +2,9 @@
 
 > Authority before confidence: operator instructions, explicit corrections, scope, and named handoff boundaries outrank model fluency.
 
-Version described: 0.5.0 alpha. Canonical public distribution: the versioned wheel on the v0.5.0 GitHub Release. PyPI publication is not claimed; CI builds but does not publish.
+Version described: 0.6.0 alpha. Canonical public distribution: the versioned wheel on the v0.6.0 GitHub Release. PyPI publication is not claimed; CI builds but does not publish.
 
-Meditate is a local behavioral-contract compiler and policy router for directives loaded by Claude Code and OpenAI Codex. Version 0.5 provides evidence-grounded semantic nomination, bounded directive compilation, archive-first reversible execution, and direct target/output compilation. Evidence-backed missing rules can become reversible introductions into exact writable targets. It combines current prose with temporally ordered interactions, memory, and Kindex—an optional local persistent knowledge graph exposed through `kin`—to nominate contradictions, supersession, under- and over-specification, wrong scope, enforcement candidates, and missing-rule hypotheses. Its fixed point is stability, not shrinkage.
+Meditate is a local behavioral-contract compiler and policy router for directives loaded by Claude Code and OpenAI Codex. Version 0.6 provides evidence-grounded semantic nomination, bounded directive compilation, archive-first reversible execution, and direct target/output compilation. Evidence-backed missing rules can become reversible introductions into exact writable targets. It combines current prose with temporally ordered interactions, memory, and Kindex—an optional local persistent knowledge graph exposed through `kin`—to nominate contradictions, supersession, under- and over-specification, wrong scope, enforcement candidates, and missing-rule hypotheses. Its fixed point is stability, not shrinkage.
 
 ## Canonical documentation
 
@@ -12,7 +12,7 @@ Meditate is a local behavioral-contract compiler and policy router for directive
 - [Privacy](https://jmcentire.github.io/meditate/privacy.html): Analyst/planner/verifier transmission, local artifacts, credentials, and telemetry boundaries
 - [Source README](https://github.com/jmcentire/meditate/blob/main/README.md): Operator guide
 - [Design brief](https://github.com/jmcentire/meditate/blob/main/docs/design-brief.md): Authority, semantic nomination, typed compilation, behavioral qualification, import, and transaction contracts
-- [Changelog](https://github.com/jmcentire/meditate/blob/main/CHANGELOG.md): v0.5.0 release contents
+- [Changelog](https://github.com/jmcentire/meditate/blob/main/CHANGELOG.md): v0.6.0 release contents
 - [Full agent reference](https://jmcentire.github.io/meditate/llms-full.txt): Expanded machine-readable reference
 
 ## Essential contract
@@ -77,7 +77,7 @@ The recommendation is model-authored and advisory, never a default. `meditate de
 
 ## Distribution
 
-v0.5.0 wheel: https://github.com/jmcentire/meditate/releases/download/v0.5.0/meditate_agent-0.5.0-py3-none-any.whl
+v0.6.0 wheel: https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
 
 ## Research boundary
 
