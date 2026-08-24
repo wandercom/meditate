@@ -13,7 +13,7 @@ import meditate.sources as sources_module
 from meditate.config import KindexConfig, SourceConfig
 from meditate.segment import segment_markdown
 from meditate.sources import collect_events
-from meditate.util import MeditateError
+from meditate.util import MeditateError, sha256_text
 
 
 def test_segmenter_preserves_ranges_nested_lists_fences_and_protection() -> None:
@@ -204,3 +204,184 @@ def test_installed_enabled_kindex_executes_every_configured_query(
     assert not events
     assert not warnings
     assert [call[2] for call in calls] == list(queries)
+
+
+def _fake_kin(responses: dict[tuple[str, str], str], calls: list[list[str]]) -> object:
+    def run(argv: list[str], **_kwargs: object) -> object:
+        calls.append(list(argv))
+        verb = argv[1]
+        key = (verb, argv[3]) if verb == "list" else (verb, argv[2])
+        return SimpleNamespace(stdout=responses[key])
+
+    return run
+
+
+def test_node_enumeration_is_off_by_default_and_runs_no_subprocess(
+    config_factory: ConfigFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _targets = config_factory()
+    config = replace(config, kindex=KindexConfig(enabled=True))
+    monkeypatch.setattr(sources_module.shutil, "which", lambda _command: "/usr/bin/kin")
+
+    def forbidden(*_args: object, **_kwargs: object) -> object:
+        raise AssertionError("node enumeration ran a subprocess while disabled")
+
+    monkeypatch.setattr(sources_module.subprocess, "run", forbidden)
+    assert sources_module.enumerate_kindex_nodes(config) == ((), ())
+
+
+def test_node_enumeration_reports_unavailable_without_kin(
+    config_factory: ConfigFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _targets = config_factory()
+    config = replace(config, kindex=KindexConfig(enabled=True, analyze_nodes=True))
+    monkeypatch.setattr(sources_module.shutil, "which", lambda _command: None)
+    records, warnings = sources_module.enumerate_kindex_nodes(config)
+    assert records == ()
+    assert warnings == ("kindex_unavailable",)
+
+
+def test_node_enumeration_lists_each_type_reads_once_and_keeps_only_active_additive_nodes(
+    config_factory: ConfigFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _targets = config_factory()
+    config = replace(config, kindex=KindexConfig(enabled=True, analyze_nodes=True))
+    monkeypatch.setattr(sources_module.shutil, "which", lambda _command: "/usr/bin/kin")
+    calls: list[list[str]] = []
+    content = "Choose pnpm over npm for every workspace install"
+    responses = {
+        ("list", "decision"): json.dumps([{"id": "aaa111"}, {"id": "ccc333"}]),
+        ("list", "constraint"): json.dumps([{"id": "bbb222"}, {"id": "aaa111"}]),
+        ("list", "directive"): "[]",
+        ("show", "aaa111"): json.dumps(
+            {
+                "type": "decision",
+                "status": "active",
+                "content": content,
+                "tags": ["tooling"],
+                "created_at": "2026-08-01T00:00:00Z",
+                "updated_at": "2026-08-02T00:00:00Z",
+            }
+        ),
+        ("show", "bbb222"): json.dumps(
+            {"type": "constraint", "status": "archived", "content": "Old rule"}
+        ),
+        ("show", "ccc333"): json.dumps(
+            {"type": "concept", "status": "active", "content": "Not an additive type"}
+        ),
+    }
+    monkeypatch.setattr(sources_module.subprocess, "run", _fake_kin(responses, calls))
+    records, warnings = sources_module.enumerate_kindex_nodes(config)
+    assert warnings == ()
+    assert [record.node_id for record in records] == ["aaa111"]
+    record = records[0]
+    assert record.node_type == "decision"
+    assert record.tags == ("tooling",)
+    assert record.text == content
+    assert record.content_sha256 == sha256_text(content)
+    assert record.created_at == "2026-08-01T00:00:00Z"
+    assert record.updated_at == "2026-08-02T00:00:00Z"
+
+    list_calls = [call for call in calls if call[1] == "list"]
+    assert [call[3] for call in list_calls] == ["decision", "constraint", "directive"]
+    for call in list_calls:
+        assert call[2] == "--type"
+        assert call[4:] == ["--status", "active", "--json"]
+    show_calls = [call for call in calls if call[1] == "show"]
+    assert [call[2] for call in show_calls] == ["aaa111", "bbb222", "ccc333"]
+    # The read-only allowlist: this path may construct no other kin verb.
+    assert {call[1] for call in calls} == {"list", "show"}
+
+
+def test_node_enumeration_excludes_secret_bearing_nodes_wholesale(
+    config_factory: ConfigFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _targets = config_factory()
+    config = replace(
+        config,
+        kindex=KindexConfig(enabled=True, analyze_nodes=True, node_types=("decision",)),
+    )
+    monkeypatch.setattr(sources_module.shutil, "which", lambda _command: "/usr/bin/kin")
+    calls: list[list[str]] = []
+    responses = {
+        ("list", "decision"): json.dumps([{"id": "aaa111"}, {"id": "bbb222"}]),
+        ("show", "aaa111"): json.dumps(
+            {
+                "type": "decision",
+                "status": "active",
+                "content": "Authorization: Bearer abcdefghijklmnopqrstuvwxyz",
+            }
+        ),
+        ("show", "bbb222"): json.dumps(
+            {"type": "decision", "status": "active", "content": "Keep evidence local"}
+        ),
+    }
+    monkeypatch.setattr(sources_module.subprocess, "run", _fake_kin(responses, calls))
+    records, warnings = sources_module.enumerate_kindex_nodes(config)
+    assert warnings == ("kindex_node_sensitive_excluded:aaa111",)
+    assert [record.node_id for record in records] == ["bbb222"]
+    assert "Bearer" not in json.dumps([record.to_dict() for record in records])
+
+
+def test_node_enumeration_fails_closed_on_malformed_json(
+    config_factory: ConfigFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _targets = config_factory()
+    config = replace(
+        config,
+        kindex=KindexConfig(enabled=True, analyze_nodes=True, node_types=("decision",)),
+    )
+    monkeypatch.setattr(sources_module.shutil, "which", lambda _command: "/usr/bin/kin")
+    calls: list[list[str]] = []
+    monkeypatch.setattr(
+        sources_module.subprocess,
+        "run",
+        _fake_kin({("list", "decision"): "not json"}, calls),
+    )
+    with pytest.raises(MeditateError) as caught:
+        sources_module.enumerate_kindex_nodes(config)
+    assert caught.value.code == "kindex_required_failed"
+
+
+def test_node_enumeration_rejects_option_shaped_node_id_before_it_reaches_argv(
+    config_factory: ConfigFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _targets = config_factory()
+    config = replace(
+        config,
+        kindex=KindexConfig(enabled=True, analyze_nodes=True, node_types=("decision",)),
+    )
+    monkeypatch.setattr(sources_module.shutil, "which", lambda _command: "/usr/bin/kin")
+    calls: list[list[str]] = []
+    responses = {("list", "decision"): json.dumps([{"id": "--data-dir=/tmp/evil"}])}
+    monkeypatch.setattr(sources_module.subprocess, "run", _fake_kin(responses, calls))
+    with pytest.raises(MeditateError) as caught:
+        sources_module.enumerate_kindex_nodes(config)
+    assert caught.value.code == "kindex_required_failed"
+    # The denial probe: the malformed id must never become a kin argv member.
+    assert all(call[1] == "list" for call in calls)
+
+
+def test_node_enumeration_truncates_deterministically_with_warning(
+    config_factory: ConfigFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    config, _targets = config_factory()
+    config = replace(
+        config,
+        kindex=KindexConfig(
+            enabled=True, analyze_nodes=True, node_types=("decision",), max_nodes=1
+        ),
+    )
+    monkeypatch.setattr(sources_module.shutil, "which", lambda _command: "/usr/bin/kin")
+    calls: list[list[str]] = []
+    responses = {
+        ("list", "decision"): json.dumps([{"id": "bbb222"}, {"id": "aaa111"}]),
+        ("show", "aaa111"): json.dumps(
+            {"type": "decision", "status": "active", "content": "First by stable id order"}
+        ),
+    }
+    monkeypatch.setattr(sources_module.subprocess, "run", _fake_kin(responses, calls))
+    records, warnings = sources_module.enumerate_kindex_nodes(config)
+    assert warnings == ("kindex_nodes_truncated:1",)
+    assert [record.node_id for record in records] == ["aaa111"]
+    assert [call[2] for call in calls if call[1] == "show"] == ["aaa111"]

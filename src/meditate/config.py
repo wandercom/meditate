@@ -36,6 +36,9 @@ class SourceConfig:
     lookback_days: int = 0
 
 
+ADDITIVE_KINDEX_NODE_TYPES = ("decision", "constraint", "directive")
+
+
 @dataclass(frozen=True)
 class KindexConfig:
     enabled: bool = True
@@ -46,6 +49,11 @@ class KindexConfig:
         "safety destructive actions verification",
     )
     max_results: int = 20
+    # Phase 1 of docs/spec-kindex-node-analysis.md: read-only additive-node
+    # enumeration is off by default and never writes or submits anything.
+    analyze_nodes: bool = False
+    node_types: tuple[str, ...] = ADDITIVE_KINDEX_NODE_TYPES
+    max_nodes: int = 200
 
 
 @dataclass(frozen=True)
@@ -196,6 +204,12 @@ queries = [
   "safety destructive actions verification",
 ]
 max_results = 20
+# Read-only enumeration of additive kindex nodes (decision/constraint/directive)
+# as future Analyst subjects. Off by default; never writes or submits anything.
+# See docs/spec-kindex-node-analysis.md.
+analyze_nodes = false
+node_types = ["decision", "constraint", "directive"]
+max_nodes = 200
 
 [llm]
 provider = "anthropic"
@@ -339,11 +353,27 @@ def load_config(path: Path | None = None) -> Config:
     queries_raw = kindex_raw.get("queries", list(KindexConfig().queries))
     if not isinstance(queries_raw, list) or not all(isinstance(item, str) for item in queries_raw):
         fail("invalid_config", "kindex.queries must be an array of strings")
+    node_types_raw = kindex_raw.get("node_types", list(ADDITIVE_KINDEX_NODE_TYPES))
+    if (
+        not isinstance(node_types_raw, list)
+        or not node_types_raw
+        or not all(isinstance(item, str) for item in node_types_raw)
+        or any(item not in ADDITIVE_KINDEX_NODE_TYPES for item in node_types_raw)
+        or len(set(node_types_raw)) != len(node_types_raw)
+    ):
+        fail(
+            "invalid_config",
+            "kindex.node_types must be a non-empty array of unique additive node types "
+            f"drawn from {list(ADDITIVE_KINDEX_NODE_TYPES)}",
+        )
     kindex = KindexConfig(
         enabled=_boolean(kindex_raw.get("enabled", True), "kindex.enabled"),
         command=_string(kindex_raw.get("command", "kin"), "kindex.command"),
         queries=tuple(queries_raw),
         max_results=_positive(kindex_raw.get("max_results", 20), "kindex.max_results"),
+        analyze_nodes=_boolean(kindex_raw.get("analyze_nodes", False), "kindex.analyze_nodes"),
+        node_types=tuple(node_types_raw),
+        max_nodes=_positive(kindex_raw.get("max_nodes", 200), "kindex.max_nodes"),
     )
     llm = LLMConfig(
         provider=_string(llm_raw.get("provider", "anthropic"), "llm.provider"),

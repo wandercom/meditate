@@ -14,11 +14,14 @@ from pathlib import Path
 from typing import Any
 
 from .config import Config
-from .models import Authority, EvidenceEvent, SourceStats
+from .models import Authority, EvidenceEvent, KindexNodeRecord, SourceStats
 from .redact import sanitize_text, surviving_high_confidence
 from .util import display_path, fail, sha256_text
 
 _ORIGIN_SESSION = re.compile(r"originSessionId:\s*[\"']?([0-9a-fA-F-]{20,})")
+# Node IDs come from kin's own JSON, but they are still revalidated before they
+# become argv members: an ID that could parse as an option flag fails closed.
+_KINDEX_NODE_ID = re.compile(r"^[0-9a-f]{4,64}$")
 
 
 def _timestamp(value: Any, fallback: float = 0.0) -> str:
@@ -412,6 +415,96 @@ def _kindex(config: Config) -> tuple[list[EvidenceEvent], SourceStats, list[str]
         ),
         warnings,
     )
+
+
+def _kin_json(config: Config, argv_tail: list[str], environment: dict[str, str]) -> Any:
+    """Run one read-only kin invocation and parse its JSON, failing closed.
+
+    Every caller passes an argv tail whose first member is a read verb; this
+    module never constructs a kin write invocation.
+    """
+    try:
+        result = subprocess.run(
+            [config.kindex.command, *argv_tail],
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=30,
+            env=environment,
+        )
+        return json.loads(result.stdout)
+    except (OSError, subprocess.SubprocessError, json.JSONDecodeError) as exc:
+        fail(
+            "kindex_required_failed",
+            "Configured Kindex is installed but a required node enumeration failed: "
+            f"{type(exc).__name__}",
+        )
+
+
+def enumerate_kindex_nodes(
+    config: Config,
+) -> tuple[tuple[KindexNodeRecord, ...], tuple[str, ...]]:
+    """Enumerate additive kindex nodes read-only as future Analyst subjects.
+
+    Phase 1 of docs/spec-kindex-node-analysis.md. Constructs only `kin list`
+    and `kin show` invocations; there is no write path and no candidate
+    submission. Off by default; when enabled and `kin` is installed, any
+    failure aborts before planning rather than degrading silently.
+    """
+    if not config.kindex.enabled or not config.kindex.analyze_nodes:
+        return (), ()
+    if not shutil.which(config.kindex.command):
+        return (), ("kindex_unavailable",)
+    environment = _minimal_subprocess_env()
+    warnings: list[str] = []
+    ids: set[str] = set()
+    for node_type in config.kindex.node_types:
+        found = _kin_json(
+            config, ["list", "--type", node_type, "--status", "active", "--json"], environment
+        )
+        if not isinstance(found, list):
+            fail("kindex_required_failed", "kin list returned non-array JSON")
+        for item in found:
+            if not isinstance(item, dict) or not item.get("id"):
+                continue
+            node_id = str(item["id"])
+            if not _KINDEX_NODE_ID.fullmatch(node_id):
+                fail("kindex_required_failed", "kin list returned a malformed node id")
+            ids.add(node_id)
+    selected = sorted(ids)
+    if len(selected) > config.kindex.max_nodes:
+        warnings.append(f"kindex_nodes_truncated:{len(selected) - config.kindex.max_nodes}")
+        selected = selected[: config.kindex.max_nodes]
+    records: list[KindexNodeRecord] = []
+    for node_id in selected:
+        node = _kin_json(config, ["show", node_id, "--json"], environment)
+        if not isinstance(node, dict) or node.get("status", "active") != "active":
+            continue
+        node_type = str(node.get("type", ""))
+        if node_type not in config.kindex.node_types:
+            continue
+        content = node.get("content") or node.get("title")
+        if not isinstance(content, str) or not content.strip():
+            continue
+        sanitized = sanitize_text(content, max_chars=config.sources.max_excerpt_chars)
+        # Secret-bearing nodes are excluded wholesale, mirroring every other
+        # evidence source: losing one node beats packaging a credential.
+        if sanitized.has_high_confidence or surviving_high_confidence(sanitized.text):
+            warnings.append(f"kindex_node_sensitive_excluded:{node_id}")
+            continue
+        tags = node.get("tags")
+        records.append(
+            KindexNodeRecord(
+                node_id=node_id,
+                node_type=node_type,
+                tags=tuple(str(tag) for tag in tags) if isinstance(tags, list) else (),
+                created_at=_timestamp(node.get("created_at")),
+                updated_at=_timestamp(node.get("updated_at") or node.get("created_at")),
+                text=sanitized.text,
+                content_sha256=sha256_text(content),
+            )
+        )
+    return tuple(records), tuple(warnings)
 
 
 def collect_events(

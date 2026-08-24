@@ -145,6 +145,31 @@ def test_inspect_cli_uses_real_shapes_but_reports_no_raw_history(
     assert "supersecretcookievalue" not in report_json + report_markdown
 
 
+def test_config_rejects_non_additive_kindex_node_types(tmp_path: Path) -> None:
+    target = tmp_path / "CLAUDE.md"
+    target.write_text("- Rule.\n", encoding="utf-8")
+    text = minimal_config_text(target, tmp_path, tmp_path / "claude").replace(
+        'command = "kin"', 'command = "kin"\nanalyze_nodes = true\nnode_types = ["concept"]'
+    )
+    path = tmp_path / "bad-node-types.toml"
+    path.write_text(text, encoding="utf-8")
+    with pytest.raises(MeditateError) as caught:
+        load_config(path)
+    assert caught.value.code == "invalid_config"
+
+
+def test_config_defaults_keep_node_enumeration_off(tmp_path: Path) -> None:
+    target = tmp_path / "CLAUDE.md"
+    target.write_text("- Rule.\n", encoding="utf-8")
+    path = tmp_path / "plain.toml"
+    path.write_text(minimal_config_text(target, tmp_path, tmp_path / "claude"), encoding="utf-8")
+    config = load_config(path)
+    assert config.kindex.analyze_nodes is False
+    assert config.kindex.node_types == ("decision", "constraint", "directive")
+    assert config.kindex.max_nodes == 200
+    assert "analyze_nodes = false" in default_config_text()
+
+
 def test_config_rejects_string_booleans(tmp_path: Path) -> None:
     target = tmp_path / "CLAUDE.md"
     target.write_text("- Rule.\n", encoding="utf-8")

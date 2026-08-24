@@ -2,6 +2,29 @@
 
 All notable changes to Meditate are documented here.
 
+## Unreleased
+
+### Added
+
+- A draft specification, `docs/spec-kindex-node-analysis.md`, defining kindex's
+  additive nodes (decisions, constraints, directives) as a read-only analysis
+  target class for the semantic Analyst. Derived from the founder-reviewed
+  kindex lineage-grounding PRD (2026-08-24, R2b): Meditate's Analyst is the
+  single nomination authority for contradiction/supersession/staleness findings
+  over those nodes; every eligible finding lands as a kindex quarantine
+  candidate, never a direct mutation; cross-scope findings stay report-only;
+  the fail-closed secret-sanitization boundary applies to node content in every
+  packet. The spec is awaiting ratification, and candidate submission is
+  blocked on a kindex-side submission surface that does not exist yet.
+- Phase 1 of that spec: a read-only additive-node enumeration entry point
+  (`enumerate_kindex_nodes`) behind the new `[kindex] analyze_nodes` flag
+  (default `false`), with `node_types` restricted to the additive set and a
+  deterministic `max_nodes` bound. Enumeration constructs only `kin list` and
+  `kin show` invocations, revalidates node IDs before they become argv members,
+  excludes secret-bearing nodes wholesale, and fails closed with
+  `kindex_required_failed` on any malformed response. No packet wiring, no
+  write path, and no candidate submission exist in this release.
+
 ## 0.5.0 - 2026-08-19
 
 Meditate v0.5.0 makes instruction input a first-class invocation contract. Operators can

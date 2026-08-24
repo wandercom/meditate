@@ -451,6 +451,13 @@ When Kindex is enabled and `kin` is installed, every configured search and reque
 node read is required. A failure aborts with `kindex_required_failed`; Meditate does not
 fall back to a weaker corpus while pretending it reviewed durable knowledge.
 
+A draft specification for pointing the Analyst at Kindex's own additive nodes
+(decisions, constraints, directives) as read-only analysis subjects — with every
+eligible finding landing as a Kindex quarantine candidate, never a direct node
+mutation — is in [docs/spec-kindex-node-analysis.md](docs/spec-kindex-node-analysis.md).
+Only its Phase 1 read-only enumeration entry point is implemented, and it is off
+by default (`[kindex] analyze_nodes = false`).
+
 ## Typed directive compilation
 
 The provider cannot return replacement Markdown. For each semantic replacement it

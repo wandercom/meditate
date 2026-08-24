@@ -70,6 +70,35 @@ class EvidenceEvent:
 
 
 @dataclass(frozen=True)
+class KindexNodeRecord:
+    """One sanitized, read-only kindex additive node.
+
+    Phase 1 of docs/spec-kindex-node-analysis.md: enumeration output only.
+    Records are immutable enumeration results; they are not evidence events,
+    not disposition targets, and not yet wired into any model packet.
+    """
+
+    node_id: str
+    node_type: str
+    tags: tuple[str, ...]
+    created_at: str
+    updated_at: str
+    text: str
+    content_sha256: str
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "node_id": self.node_id,
+            "node_type": self.node_type,
+            "tags": list(self.tags),
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "text": self.text,
+            "content_sha256": self.content_sha256,
+        }
+
+
+@dataclass(frozen=True)
 class Directive:
     id: str
     target: str
