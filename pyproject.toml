@@ -9,7 +9,7 @@ description = "Evidence-grounded semantic analysis and recoverable directive com
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
-authors = [{name = "Jeremy McEntire", email = "jandrewmcentire@gmail.com"}]
+authors = [{name = "Wander"}]
 dependencies = ["anthropic>=0.122,<1"]
 classifiers = [
   "Development Status :: 3 - Alpha",
