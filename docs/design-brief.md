@@ -821,7 +821,7 @@ into new plans. The
 canonical public distribution surface is the versioned wheel attached to the
 `v0.6.0` GitHub Release:
 
-`https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl`
+`https://github.com/wandercom/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl`
 
 The repository CI checks Ruff, strict mypy, pytest across supported Python
 versions, and an isolated wheel build. It does not publish. PyPI publication is

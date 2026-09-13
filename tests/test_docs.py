@@ -89,7 +89,7 @@ def test_pages_root_and_agent_discovery_contract() -> None:
     assert (DOCS / "robots.txt").is_file()
     assert (DOCS / "sitemap.xml").is_file()
     llms = (DOCS / "llms.txt").read_text(encoding="utf-8")
-    assert "https://jmcentire.github.io/meditate/" in llms
+    assert "https://wandercom.github.io/meditate/" in llms
     assert "llms-full.txt" in llms
     assert (DOCS / "llms-full.txt").is_file()
 

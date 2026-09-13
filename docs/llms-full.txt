@@ -1,7 +1,7 @@
 # Meditate: full agent reference
 
-Canonical docs: https://jmcentire.github.io/meditate/
-Source: https://github.com/jmcentire/meditate
+Canonical docs: https://wandercom.github.io/meditate/
+Source: https://github.com/wandercom/meditate
 Version described: 0.6.0 alpha
 Snapshot: 2026-08-24
 License: MIT
@@ -186,7 +186,7 @@ Runtime credentials use only `ANTHROPIC_API_KEY` for planning and `OPENAI_API_KE
 ## Distribution
 
 The canonical public distribution for v0.6.0 is the GitHub Release wheel:
-https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
+https://github.com/wandercom/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
 
 PyPI publication is not claimed. CI validates Ruff, strict mypy, pytest on supported Python versions, and an isolated wheel build but does not publish.
 
