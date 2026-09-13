@@ -8,12 +8,12 @@ Meditate is a local behavioral-contract compiler and policy router for directive
 
 ## Canonical documentation
 
-- [Documentation](https://jmcentire.github.io/meditate/): Product, workflow, semantic boundary, safety, and commands
-- [Privacy](https://jmcentire.github.io/meditate/privacy.html): Analyst/planner/verifier transmission, local artifacts, credentials, and telemetry boundaries
-- [Source README](https://github.com/jmcentire/meditate/blob/main/README.md): Operator guide
-- [Design brief](https://github.com/jmcentire/meditate/blob/main/docs/design-brief.md): Authority, semantic nomination, typed compilation, behavioral qualification, import, and transaction contracts
-- [Changelog](https://github.com/jmcentire/meditate/blob/main/CHANGELOG.md): v0.6.0 release contents
-- [Full agent reference](https://jmcentire.github.io/meditate/llms-full.txt): Expanded machine-readable reference
+- [Documentation](https://wandercom.github.io/meditate/): Product, workflow, semantic boundary, safety, and commands
+- [Privacy](https://wandercom.github.io/meditate/privacy.html): Analyst/planner/verifier transmission, local artifacts, credentials, and telemetry boundaries
+- [Source README](https://github.com/wandercom/meditate/blob/main/README.md): Operator guide
+- [Design brief](https://github.com/wandercom/meditate/blob/main/docs/design-brief.md): Authority, semantic nomination, typed compilation, behavioral qualification, import, and transaction contracts
+- [Changelog](https://github.com/wandercom/meditate/blob/main/CHANGELOG.md): v0.6.0 release contents
+- [Full agent reference](https://wandercom.github.io/meditate/llms-full.txt): Expanded machine-readable reference
 
 ## Essential contract
 
@@ -77,7 +77,7 @@ The recommendation is model-authored and advisory, never a default. `meditate de
 
 ## Distribution
 
-v0.6.0 wheel: https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
+v0.6.0 wheel: https://github.com/wandercom/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
 
 ## Research boundary
 

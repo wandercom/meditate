@@ -24,11 +24,11 @@ classifiers = [
 ]
 
 [project.urls]
-Homepage = "https://jmcentire.github.io/meditate/"
-Documentation = "https://jmcentire.github.io/meditate/"
-Repository = "https://github.com/jmcentire/meditate"
-Issues = "https://github.com/jmcentire/meditate/issues"
-Changelog = "https://github.com/jmcentire/meditate/blob/main/CHANGELOG.md"
+Homepage = "https://wandercom.github.io/meditate/"
+Documentation = "https://wandercom.github.io/meditate/"
+Repository = "https://github.com/wandercom/meditate"
+Issues = "https://github.com/wandercom/meditate/issues"
+Changelog = "https://github.com/wandercom/meditate/blob/main/CHANGELOG.md"
 
 [project.optional-dependencies]
 dev = [

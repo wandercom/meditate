@@ -397,7 +397,7 @@ equivalence or future-model performance.
 ## 0.1.0 - 2026-08-18
 
 First public alpha release, prepared for distribution as a versioned wheel on the
-[`v0.1.0` GitHub Release](https://github.com/jmcentire/meditate/releases/tag/v0.1.0).
+[`v0.1.0` GitHub Release](https://github.com/wandercom/meditate/releases/tag/v0.1.0).
 PyPI publication is not claimed.
 
 ### Added

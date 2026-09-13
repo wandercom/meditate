@@ -1,6 +1,6 @@
 # Meditate
 
-[Documentation](https://jmcentire.github.io/meditate/) ·
+[Documentation](https://wandercom.github.io/meditate/) ·
 [Privacy](PRIVACY.md) ·
 [Design brief](docs/design-brief.md) ·
 [Changelog](CHANGELOG.md)
@@ -78,7 +78,7 @@ attached to its GitHub Release. After that release asset is published:
 
 ```bash
 python3 -m venv .venv
-.venv/bin/pip install https://github.com/jmcentire/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
+.venv/bin/pip install https://github.com/wandercom/meditate/releases/download/v0.6.0/meditate_agent-0.6.0-py3-none-any.whl
 .venv/bin/meditate init
 ```
 
@@ -87,7 +87,7 @@ PyPI publication is not claimed, and CI builds but does not publish artifacts.
 ### Contributor editable install
 
 ```bash
-git clone https://github.com/jmcentire/meditate.git
+git clone https://github.com/wandercom/meditate.git
 cd meditate
 python3 -m venv .venv
 .venv/bin/pip install -e '.[dev]'
@@ -708,7 +708,7 @@ raw questions, options, or custom responses.
 The tests use synthetic histories only. See [the design brief](docs/design-brief.md)
 for authority, transaction, and acceptance contracts. The dependency-free static
 documentation site lives in `docs/` and is published from `main:/docs` at
-<https://jmcentire.github.io/meditate/>.
+<https://wandercom.github.io/meditate/>.
 
 The first attended Claude pass on 2026-08-18 inspected 15,531 unique evidence
 events, selected 180 within budget, excluded nine secret-bearing records wholesale,

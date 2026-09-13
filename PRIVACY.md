@@ -99,7 +99,7 @@ successor IDs, the conflict fingerprint, and plan/response hashes needed to prev
 replay. A still-retained parent run continues to contain its own archived question
 until it too is explicitly purged.
 
-The documentation site at <https://jmcentire.github.io/meditate/> is static. It
+The documentation site at <https://wandercom.github.io/meditate/> is static. It
 sets no cookies and loads no third-party analytics, scripts, fonts, or images.
 GitHub Pages may process ordinary request metadata under GitHub's own terms.
 
@@ -113,5 +113,5 @@ configured or invocation-local writable targets, and whether `run --apply` or a 
 review their model provider's data-handling terms before enabling model calls or
 opt-in transcript bodies.
 
-See the [full privacy page](https://jmcentire.github.io/meditate/privacy.html) for
+See the [full privacy page](https://wandercom.github.io/meditate/privacy.html) for
 details. Last updated August 19, 2026; applies to Meditate 0.5.x.
